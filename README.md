@@ -130,3 +130,134 @@ pnpm commit
 
 pnpm lint:ts && pnpm spellcheck
 ```
+
+### `.vscode/settings.json` 统一本项目的配置
+
+```json
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"]
+}
+```
+
+### ts 相关配置
+
+`tsconfig.json` -- 基础、公用配置  
+`tsconfig.server.json` -- 服务端配置  
+`tsconfig.client.json` -- 客户端配置
+
+### tsup？使用？解决了什么问题？
+
+#### tsup 使用示例
+
+```json
+"scripts": {
+    // 通过watch监听子包有变化时，本项目的引入方（demos/vanilla/src/index.ts）会自动同步最新的变化
+    "build:watch": "pnpm run build:watch:transpile & pnpm run build:watch:types",
+    "build:watch:transpile": "tsup --watch",
+    "build:watch:types": "tsc -p tsconfig.types.json --watch",
+    "build": "pnpm run build:transpile && pnpm run build:types",
+    "build:transpile": "tsup",
+    "build:types": "tsc -p tsconfig.types.json"
+},
+```
+
+#### 子包产物及子包产物向外暴露的规范
+
+```json
+# package.json
+    "main": "build/cjs/index.js",       // 入口文件对应为commonjs的产物
+    "module": "build/esm/index.mjs",    // 对应es module的产物
+    "types": "build/types/index.d.ts",  // 对应types的产物
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {  // 主入口点（当 import 'package-name' 时）
+            "import": {   // ES6 模块导入 (import/export)
+                "types": "./build/types/index.d.ts",  // TypeScript 类型定义
+                "default": "./build/esm/index.mjs"    // ES6 模块文件
+            },
+            "require": {  // CommonJS 导入 (require())
+                "types": "./build/types/index.d.ts",    // TypeScript 类型定义
+                "default": "./build/cjs/index.js"       // CommonJS 模块文件
+            }
+        }
+    },
+```
+
+#### 示例场景
+
+1. ES6 模块导入
+
+```js
+import { something } from 'package-name'
+// 会使用 ./build/esm/index.mjs
+```
+
+2. CommonJS 导入
+
+```js
+const { something } = require('package-name')
+// 会使用 ./build/cjs/index.js
+```
+
+3. TypeScript 支持
+   无论哪种导入方式，TypeScript 都会使用 ./build/types/index.d.ts 获取类型信息。
+
+#### 优势
+
+1. 双格式支持 - 同时支持 ES6 和 CommonJS
+2. 条件导出 - 根据导入方式自动选择合适的文件
+3. TypeScript 友好 - 提供完整的类型支持
+4. 现代标准 - 符合 Node.js 模块解析规范
+
+## 指标采集、埋点设计实践与数据上报机制实现
+
+### SDK 数据采集上报核心实现思路
+
+#### 核心模块
+
+1. 性能指标
+    - FP
+    - FCP
+    - CLS
+    - FID
+    - INP
+2. 异常指标
+    - js 执行异常
+    - 资源加载异常
+    - promise reject 异常
+3. 事件
+    - 点击事件 click
+    - 进入、离开，pv、uv
+    - 只要是能够监听的事件都可以统计上报
+4. 浏览器宿主环境信息
+    - IP
+    - 机型
+    - 系统
+    - 浏览器版本
+5. 数据传输协议
+    - xhr
+    - 图片
+    - sendbacon
+    - fetch ✅
+
+#### 原生 js 环境下测试
+
+-   在`demos/`下，创建一个 vanilla 项目用于调试原生 js 环境
+
+```sh
+pnpm create vite vanilla --template vanilla-ts
+```
+
+## 实现 SDK 开发
+
+1. 产物如何构建
+
+-   通过 tsup
+
+2. 产物构建的内容如何被其他子包使用
+    1. 非构建方式
+    2. 构建方式 ✅

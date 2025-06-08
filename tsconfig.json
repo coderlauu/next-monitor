@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+        // 严格模式
+        "alwaysStrict": false,
+        // 生成d.ts文件
+        "declaration": true,
+        // 生成d.ts.map文件
+        "declarationMap": true,
+        // 向下兼容迭代器
+        "downlevelIteration": true,
+        // 导入辅助函数
+        "importHelpers": true,
+        // 内联源码
+        "inlineSources": true,
+        // 隔离模块
+        "isolatedModules": true,
+        // 库
+        "lib": ["ESNext"],
+        // 模块解析
+        "moduleResolution": "node",
+        // 不截断错误
+        "noErrorTruncation": true,
+        // 不截断switch
+        "noFallthroughCasesInSwitch": true,
+        // 不隐式返回
+        "noImplicitReturns": true,
+        // 不未使用的局部变量
+        "noUnusedLocals": false,
+        // 不未使用的参数
+        "noUnusedParameters": false,
+        // 保留watch输出
+        "preserveWatchOutput": true,
+        // 源码映射
+        "sourceMap": true,
+        // 严格模式
+        "strict": true,
+        // 严格绑定、调用、应用
+        "strictBindCallApply": false,
+        // 构建的产物标准
+        "target": "es2018",
+        // 不检查索引访问
+        "noUncheckedIndexedAccess": true
+    }
+}
