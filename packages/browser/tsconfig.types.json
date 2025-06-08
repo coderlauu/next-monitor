@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.json",
+
+    // 单独声明构建出来的产物 `build/types`，只生成d.ts文件，不生成js文件，避免构建产物污染
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "outDir": "build/types"
+    }
+}
