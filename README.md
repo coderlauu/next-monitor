@@ -219,7 +219,7 @@ const { something } = require('package-name')
 
 #### 核心模块
 
-1. 性能指标
+1. 性能指标 `/packages/browser-utils/src/metrics` 用的是 web-vitals 这个库的源码
     - FP
     - FCP
     - CLS
@@ -261,3 +261,15 @@ pnpm create vite vanilla --template vanilla-ts
 2. 产物构建的内容如何被其他子包使用
     1. 非构建方式
     2. 构建方式 ✅
+
+#### 针对 packages 下的多个子包同时构建并监听
+
+在根目录的 package.json 中，添加 build 命令
+
+```json
+"scripts": {
+    // ...
+    "build": "pnpm --filter @next-monitor/* build",
+    "build:watch": "pnpm --filter @next-monitor/* build --watch"
+},
+```

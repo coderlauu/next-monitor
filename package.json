@@ -7,7 +7,9 @@
         "lint:ts": "eslint",
         "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"(packages|apps)/**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md)\"",
         "commit": "git-cz",
-        "prepare": "husky"
+        "prepare": "husky",
+        "build": "pnpm --filter @next-monitor/* build",
+        "build:watch": "pnpm --filter @next-monitor/* build --watch"
     },
     "repository": {
         "type": "git",
