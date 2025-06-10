@@ -28,5 +28,8 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "description": ""
+    "description": "",
+    "dependencies": {
+        "@next-monitor/monitor-sdk-core": "workspace:*"
+    }
 }

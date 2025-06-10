@@ -1,13 +1,15 @@
 /**
  * @description 实现性能监控、异常捕获、点击事件采集，以及浏览器专用的Transport
  */
-import { Monitoring } from "@next-monitor/monitor-sdk-core"
-import { Errors } from "./tracing/errorsIntegration"
-import { BrowserTransport } from "./transport"
+import { Metrics } from '@next-monitor/monitor-sdk-browser-utils'
+import { Integration, Monitoring } from '@next-monitor/monitor-sdk-core'
+
+import { Errors } from './tracing/errorsIntegration'
+import { BrowserTransport } from './transport'
 
 interface InitOptions {
     dsn: string
-    integrations: any[]
+    integrations?: Integration[]
 }
 
 // class Monitoring {
@@ -22,7 +24,6 @@ interface InitOptions {
 //         transport.send
 //     }
 // }
-
 
 // 有多种传输数据的方式；抽象出Transport接口
 // 1. 使用Image对象
@@ -42,7 +43,7 @@ export const init = (options: InitOptions) => {
     const monitoring = new Monitoring({
         dsn: options.dsn,
         // 2. 插件注册和消费
-        integrations: options.integrations
+        integrations: options?.integrations || [],
     })
     // 定义上报逻辑方法
     const transport = new BrowserTransport(options.dsn)
@@ -51,7 +52,7 @@ export const init = (options: InitOptions) => {
     // 错误采集
     new Errors(transport).init()
     // 性能采集
-    // new Metrics(transport).init()
+    new Metrics(transport).init()
 
     return monitoring
 }

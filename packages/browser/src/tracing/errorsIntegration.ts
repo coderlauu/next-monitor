@@ -1,7 +1,7 @@
 /**
  * @description 错误采集插件
  */
-import { Transport } from '@miaoma/monitor-sdk-core'
+import { Transport } from '@next-monitor/monitor-sdk-core'
 
 export class Errors {
     transport: Transport
@@ -16,7 +16,7 @@ export class Errors {
                 type: error?.name,
                 stack: error?.stack,
                 message,
-                path: window.location.pathname
+                path: window.location.pathname,
             })
         }
 
@@ -26,7 +26,7 @@ export class Errors {
                 type: 'unhandledrejection',
                 stack: event.reason.stack,
                 message: event.reason.message,
-                path: window.location.pathname
+                path: window.location.pathname,
             })
         }
     }

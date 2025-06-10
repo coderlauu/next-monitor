@@ -16,6 +16,6 @@ export default defineConfig([
         entry: ['src'],
         format: ['iife'],
         outDir: 'build/umd',
-        name: 'next-monitor-sdk-browser',
+        name: 'next-monitor-sdk-core',
     },
 ])

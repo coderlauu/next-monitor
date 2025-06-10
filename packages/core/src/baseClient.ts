@@ -1,6 +1,5 @@
-import { Transport } from "./transport";
-import { MonitoringOptions } from "./types";
-
+import { Transport } from './transport'
+import { MonitoringOptions } from './types'
 
 export class Monitoring {
     private transport: Transport | null = null

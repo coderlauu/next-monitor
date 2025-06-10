@@ -5,7 +5,7 @@ export class BrowserTransport {
         fetch(this.dsn, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         }).catch(err => console.error('Failed to send data', err))
     }
 }

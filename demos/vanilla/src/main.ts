@@ -12,8 +12,9 @@ import typescriptLogo from './typescript.svg'
 
 // 初始化 SDK
 init({
-    dsn: 'http://localhost:8000/',
+    dsn: 'http://localhost:8000/api/v1/events',
 })
+// mainfn()
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
