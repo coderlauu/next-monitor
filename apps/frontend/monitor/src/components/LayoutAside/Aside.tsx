@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Bug, CalendarCheck, Lightbulb, Package, Settings, Siren, Zap } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,6 @@ import * as srv from '@/services'
 import { queryClient } from '@/utils/query-client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { toast } from 'sonner'
 
 const menus = [
     {
@@ -57,9 +57,8 @@ export function Aside() {
         },
     })
 
-    const handleConfetti = () => {
-        // miaoConfetti.firework()
-    }
+    const handleConfetti = () => {}
+
     const handleLogout = () => {
         toast.success('退出登录')
         localStorage.removeItem('token')

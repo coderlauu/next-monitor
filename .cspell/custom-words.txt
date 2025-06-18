@@ -4,3 +4,9 @@ bitnami
 lauclickhouse
 sonner
 zstd
+Elipssis
+miao
+nums
+perfs
+Heyi
+Hypernova

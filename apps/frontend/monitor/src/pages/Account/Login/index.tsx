@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -11,7 +12,6 @@ import { encrypt } from '@/utils/crypto'
 
 import { TaiJi } from './TaiJi'
 import { World } from './World'
-import { toast } from 'sonner'
 
 export function Login() {
     const form = useForm<CreateUserPayload>()

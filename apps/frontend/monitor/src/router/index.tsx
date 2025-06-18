@@ -1,14 +1,16 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import Layout from '../layout'
-import AuthRoute from './AuthRoute'
-import { Login } from '@/views/Login'
-import { Projects } from '@/views/Projects'
-import { Issues } from '@/views/Issues'
-import { Performance } from '@/views/Performance'
-import { PerformanceSummary } from '@/views/PerformanceSummary'
-import { Dashboard } from '@/views/Dashboard'
+
 import { Alerts } from '@/views/Alerts'
 import { Crons } from '@/views/Corns'
+import { Dashboard } from '@/views/Dashboard'
+import { Issues } from '@/views/Issues'
+import { Login } from '@/views/Login'
+import { Performance } from '@/views/Performance'
+import { PerformanceSummary } from '@/views/PerformanceSummary'
+import { Projects } from '@/views/Projects'
+
+import Layout from '../layout'
+import AuthRoute from './AuthRoute'
 
 export const router = createBrowserRouter([
     {

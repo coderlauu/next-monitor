@@ -1,18 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import { Copy, Package, Settings } from 'lucide-react'
-import * as srv from '@/services'
-import { toast } from 'sonner'
 import copyText from 'copy-text-to-clipboard'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import { lightFormat } from 'date-fns'
+import { Copy, Package, Settings } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import * as srv from '@/services'
 import type { CreateApplicationPayload } from '@/types/api'
-import { appLogoMap } from './meta'
+
 import { CreateProjectsModal } from './CreateProjectModal'
+import { appLogoMap } from './meta'
 
 export function Projects() {
     const {
@@ -22,34 +24,29 @@ export function Projects() {
     } = useQuery({
         queryKey: ['applications'],
         queryFn: async () => {
-            try {
-                const res = await srv.fetchApplicationList()
-                const allEvents = await fetch('/dsn-api/span')
-                const allEventsData = await allEvents.json()
+            const res = await srv.fetchApplicationList()
+            const allEvents = await fetch('/dsn-api/span')
+            const allEventsData = await allEvents.json()
 
-                return res.data.applications.map(app => {
-                    // 错误
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const bugs = allEventsData.filter((event: any) => event.app_id === app.appId && event.event_type === 'error')
-                    // 事务
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const transactions = allEventsData.filter((event: any) => event.app_id === app.appId && event.event_type !== 'error')
-                    const data = new Array(7).fill(0).map((_, index) => ({
-                        date: new Date(new Date().setDate(new Date().getDate() - index)).toISOString(),
-                        resting: Math.floor(Math.random() * (100 - 20) + 20),
-                    }))
+            return res.data.applications.map(app => {
+                // 错误
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const bugs = allEventsData.filter((event: any) => event.app_id === app.appId && event.event_type === 'error')
+                // 事务
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const transactions = allEventsData.filter((event: any) => event.app_id === app.appId && event.event_type !== 'error')
+                const data = new Array(7).fill(0).map((_, index) => ({
+                    date: new Date(new Date().setDate(new Date().getDate() - index)).toISOString(),
+                    resting: Math.floor(Math.random() * (100 - 20) + 20),
+                }))
 
-                    return {
-                        ...app,
-                        bugs: bugs.length,
-                        transactions: transactions.length,
-                        data,
-                    }
-                })
-            } catch (error) {
-                console.error('queryFn 执行出错:', error) // 添加错误处理
-                throw error
-            }
+                return {
+                    ...app,
+                    bugs: bugs.length,
+                    transactions: transactions.length,
+                    data,
+                }
+            })
         },
     })
 

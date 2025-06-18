@@ -1,6 +1,7 @@
-import { Aside } from '@/components/LayoutAside/Aside'
 import { useLayoutEffect } from 'react'
 import { Outlet } from 'react-router-dom'
+
+import { Aside } from '@/components/LayoutAside/Aside'
 
 export default function Layout() {
     useLayoutEffect(() => {
