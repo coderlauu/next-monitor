@@ -12,9 +12,24 @@ import typescriptLogo from './typescript.svg'
 
 // 初始化 SDK
 init({
-    dsn: 'http://localhost:8000/api/v1/events',
+    dsn: '/dsn-api/tracing/vanilla10_UBT',
 })
-// mainfn()
+
+// Promise错误
+Promise.reject('error')
+
+// 资源错误
+const img = new Image()
+img.src = ''
+
+// 接口错误
+fetch('https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png')
+    .then(res => {
+        console.log('res', res)
+    })
+    .catch(err => {
+        console.log('err', err)
+    })
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>

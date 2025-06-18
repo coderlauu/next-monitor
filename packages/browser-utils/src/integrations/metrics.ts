@@ -10,8 +10,6 @@ export class Metrics {
 
     init() {
         ;[onCLS, onFCP, onLCP, onTTFB].forEach(metricFn => {
-            console.log('metricFn', metricFn)
-
             metricFn(metric => {
                 this.transport.send({
                     event_type: 'performance',

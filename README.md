@@ -273,3 +273,135 @@ pnpm create vite vanilla --template vanilla-ts
     "build:watch": "pnpm --filter @next-monitor/* build --watch"
 },
 ```
+
+#### docker compose
+
+1、编写 docker 服务编排 -> .devcontainer/docker-compose.yml
+2、定义 docker 启动脚本 —> "docker:start": "docker compose -p next-monitor -f .devcontainer/docker-compose.yml up -d"
+3、pnpm docker:start (请先确保 docker 应用已开启)
+
+## 快读、高效的启动多个项目【turbo】
+
+#### 依赖安装
+
+```json
+    "turbo": "2.5.3",
+```
+
+#### 配置【见 turbo.json】
+
+```json
+{
+    // 提供 JSON schema 支持，用于 IDE 的自动补全和验证【一般写死】
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        // 针对所有packages下面的子包，启动一键构建
+        "build:watch": {
+            // 禁用缓存，因为 watch 模式需要持续监听文件变化
+            "cache": false,
+            // 标记为持久任务，不会自动退出
+            "persistent": true
+        },
+        /**
+        1、构建本工程下的所有带有 `build` 的项目
+        2、流程：
+            1）Turbo 扫描所有包：发现 packages/core、packages/browser 等
+            2）分析依赖关系：
+                - browser 包依赖 core 包
+                - core 包没有依赖其他包
+            3）构建执行顺序：
+                第一批：core, browser-utils, utils（并行执行）
+                第二批：browser（等第一批完成后执行）
+                第三批：frontend, backend 应用
+        3、^ 表示"依赖的工作空间包"；这告诉 Turbo：在执行当前包的 build 之前，必须先完成所有依赖包的 build
+        */
+        "build": {
+            "dependsOn": ["^build"],
+            // 指定构建输出目录，用于缓存优化
+            "outputs": ["dist/**/*"]
+        },
+        // 针对 `apps/frontend` 下的项目进行一键启动
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        // 针对 `apps/backend` 下的所有服务端项目，一键启动【前提是他们各自都有start:dev这个命令】
+        "start:dev": {
+            // 依赖于其他包的 start:dev 任务
+            "dependsOn": ["^start:dev"],
+            "cache": false,
+            "persistent": true
+        }
+    },
+    // ui: 设置为 "tui"（Terminal User Interface），提供更好的终端界面体验
+    "ui": "tui",
+    // 指定缓存目录位置
+    "cacheDir": ".turbo/cache"
+}
+```
+
+#### `package.json`配置
+
+```json
+    "packageManager": "pnpm@10.10.0",  // 跟随当前的pnpm版本
+    "scripts": {
+        "build:watch": "turbo build:watch",
+        "build": "turbo build",
+        // 同时启动所有后端服务
+        "start": "turbo start:dev",
+        // 单独运行前端项目
+        "dev:monitor": "pnpm --filter @next-monitor/monitor-client dev",
+    }
+```
+
+## caddy 反向代理
+
+### `.devcontainer/caddy`
+
+#### `restart.sh` 定义执行脚本
+
+终端回到 caddy 当前目录，执行 `chmod +x restart.sh` 将 `restart.sh` 转成可执行文件；
+在 caddy 当前目录下执行 `./restart.sh`
+
+#### 将项目的构建文件给 caddy 代理
+
+### 记录个关于 nestjs 部署的坑
+
+-   一般的，在前端项目部署到服务器上是不需要带 `node_modules` 的
+-   而对于 nestjs 则不同，它构建之后是依赖于 `node_modules` 才能启动，所以在部署它时，还需要携带 `node_modules` 文件
+-   而用 docker 去构建 nestjs 之后，docker 镜像的磁盘占用会特别大（几个 G），对于服务器的磁盘空间是巨大的消耗！！！
+-   一般通过 pm2 来部署 nestjs 项目
+
+### pm2 的使用
+
+-   先确认 pm2 是否安装
+
+```sh
+npx pm2 -v
+```
+
+-   cd 到对应的后端项目
+
+```sh
+cd ./apps/backend/dsn-server
+npx pm2 start --name dsn-server dist/main.js
+```
+
+这时你会看到当前的项目 status 已经跑起来了
+
+pm2 会在你服务遇到错误时自动重启
+
+-   查看 pm2 的监控系统，可以查看服务器运行情况【收费】
+
+```sh
+npx pm2 monitor
+```
+
+### 通过 caddy 对域名颁发证书
+
+在 `.devcontainer/caddy/Caddyfile` 中的 :80 改为 你实际解析好的域名即可
+caddy 会将这个域名映射到你主机的 ip（服务器的主机 ip）上
+
+### 数据库、clickhouse 等服务的部署
+
+这些服务通过 docker 通过来部署

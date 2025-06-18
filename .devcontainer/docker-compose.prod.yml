@@ -1,0 +1,106 @@
+# docker-compose.prod.yml
+version: '3.8'
+
+services:
+    # 数据库服务
+    next-monitor-postgresql:
+        image: bitnami/postgresql:17.5.0
+        container_name: next-monitor-postgresql
+        environment:
+            - POSTGRES_USERNAME=postgres
+            - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRESQL_DATABASE=next_monitor
+        volumes:
+            - postgresql_data:/bitnami/postgresql
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+    next-monitor-redis:
+        image: bitnami/redis:7.4.2
+        container_name: next-monitor-redis
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        volumes:
+            - redis_data:/bitnami/redis/data
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+    next-monitor-clickhouse:
+        image: bitnami/clickhouse:25.3.1
+        container_name: next-monitor-clickhouse
+        environment:
+            - CLICKHOUSE_USER=default
+            - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+            - CLICKHOUSE_DATABASE=monitor
+        volumes:
+            - clickhouse_data:/bitnami/clickhouse
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+    # 后端服务
+    next-monitor-api:
+        build:
+            context: .
+            dockerfile: Dockerfile.monitor
+        container_name: next-monitor-api
+        environment:
+            - NODE_ENV=production
+            - PORT=8001
+            - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@next-monitor-postgresql:5432/next_monitor
+            - REDIS_URL=redis://:${REDIS_PASSWORD}@next-monitor-redis:6379
+            - CLICKHOUSE_URL=http://default:${CLICKHOUSE_PASSWORD}@next-monitor-clickhouse:8123
+        depends_on:
+            - next-monitor-postgresql
+            - next-monitor-redis
+            - next-monitor-clickhouse
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+    next-monitor-dsn:
+        build:
+            context: .
+            dockerfile: Dockerfile.dsn
+        container_name: next-monitor-dsn
+        environment:
+            - NODE_ENV=production
+            - PORT=8000
+            - CLICKHOUSE_URL=http://default:${CLICKHOUSE_PASSWORD}@next-monitor-clickhouse:8123
+        depends_on:
+            - next-monitor-clickhouse
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+    # 反向代理
+    next-monitor-caddy:
+        image: caddy:2.10.0
+        container_name: next-monitor-caddy
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+            - ./apps/frontend/monitor/dist:/app/frontend/monitor
+            - caddy_data:/data
+            - caddy_config:/config
+        depends_on:
+            - next-monitor-api
+            - next-monitor-dsn
+        restart: unless-stopped
+        networks:
+            - monitor-network
+
+volumes:
+    postgresql_data:
+    redis_data:
+    clickhouse_data:
+    caddy_data:
+    caddy_config:
+
+networks:
+    monitor-network:
+        driver: bridge

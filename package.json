@@ -3,13 +3,28 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
+    "packageManager": "pnpm@10.10.0",
     "scripts": {
         "lint:ts": "eslint",
         "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"(packages|apps)/**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md)\"",
         "commit": "git-cz",
         "prepare": "husky",
-        "build": "pnpm --filter @next-monitor/* build",
-        "build:watch": "pnpm --filter @next-monitor/* build --watch"
+        "build:watch": "turbo build:watch",
+        "build": "turbo build",
+        "start": "turbo start:dev",
+        "dev:server:dsn": "pnpm --filter @next-monitor/monitor-dsn-server start:dev",
+        "dev:server:monitor": "pnpm --filter @next-monitor/monitor-server start:dev",
+        "dev:monitor": "pnpm --filter @next-monitor/monitor-client dev",
+        "docker:start": "docker compose -p next-monitor -f .devcontainer/docker-compose.yml up -d",
+        "docker:deploy": "docker compose -f .devcontainer/docker-compose.deploy.yml up -d",
+        "docker:build-deploy": "pnpm build && pnpm docker:deploy",
+        "docker:deploy:stop": "docker compose -f .devcontainer/docker-compose.deploy.yml down",
+        "build:all": "pnpm -r build",
+        "dev:backends": "pm2 start ecosystem.config.js --env development",
+        "stop:backends": "pm2 stop all",
+        "restart:backends": "pm2 restart all",
+        "logs:backends": "pm2 logs",
+        "status:backends": "pm2 status"
     },
     "repository": {
         "type": "git",
@@ -44,6 +59,8 @@
         "commitizen": "4.3.1",
         "husky": "9.1.6",
         "cz-git": "1.10.1",
-        "tsup": "8.3.0"
+        "tsup": "8.3.0",
+        "turbo": "2.5.3",
+        "pm2": "6.0.6"
     }
 }

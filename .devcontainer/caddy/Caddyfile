@@ -1,0 +1,23 @@
+8.134.122.242 {
+    encode gzip
+
+    # API路由
+    @api_routes path /api/*
+    handle @api_routes {
+        reverse_proxy next-monitor-api:8001
+    }
+
+    # DSN API路由  
+    @dsn_routes path /dsn-api/*
+    handle @dsn_routes {
+        rewrite * /api/{path}
+        reverse_proxy next-monitor-dsn:8000
+    }
+
+    # 前端静态文件
+    handle {
+        root * /app/frontend/monitor
+        try_files {path} /index.html
+        file_server
+    }
+}

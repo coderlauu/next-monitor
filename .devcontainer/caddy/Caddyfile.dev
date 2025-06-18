@@ -1,0 +1,35 @@
+# 本地监控示例
+:80 {
+        log {
+                output stderr
+                format console
+                level DEBUG
+        }
+
+        encode zstd gzip
+
+        header +Cache-Control "max-age=0, private, must-revalidate"
+
+        # Monitor API - 保留 /api 前缀，代理到 monitor 服务
+        @api_routes path /api/*
+        handle @api_routes {
+                reverse_proxy http://host.docker.internal:8001
+        }
+
+        # DSN API - 将 /dsn-api 重写为 /api，代理到 dsn-server 服务  
+        @dsn_routes path /dsn-api/*
+        handle @dsn_routes {
+                rewrite * /api/{path}
+                reverse_proxy http://host.docker.internal:8000
+        }
+
+        # 前端文件服务
+        uri strip_suffix /
+        root * /app/frontend/monitor
+        handle {
+                templates
+                try_files {path}.html {path} /
+                file_server
+        }
+
+}

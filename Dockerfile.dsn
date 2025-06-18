@@ -1,0 +1,27 @@
+# Dockerfile.dsn  
+FROM node:20.15.1-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/backend/dsn-server/package.json ./apps/backend/dsn-server/
+COPY packages ./packages
+
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+COPY apps/backend/dsn-server ./apps/backend/dsn-server
+COPY tsconfig*.json ./
+RUN cd apps/backend/dsn-server && pnpm build
+
+FROM node:20.15.1-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/apps/backend/dsn-server/dist ./dist
+COPY --from=builder /app/apps/backend/dsn-server/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 8000
+
+CMD ["node", "dist/main.js"]

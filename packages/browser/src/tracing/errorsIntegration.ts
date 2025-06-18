@@ -21,6 +21,7 @@ export class Errors {
         }
 
         window.onunhandledrejection = event => {
+            console.log('onunhandledrejection', event)
             this.transport.send({
                 event_type: 'error',
                 type: 'unhandledrejection',
