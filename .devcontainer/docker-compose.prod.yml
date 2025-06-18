@@ -8,7 +8,7 @@ services:
         container_name: next-monitor-postgresql
         environment:
             - POSTGRES_USERNAME=postgres
-            - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRESQL_PASSWORD=leslie2003
             - POSTGRESQL_DATABASE=next_monitor
         volumes:
             - postgresql_data:/bitnami/postgresql
@@ -20,7 +20,7 @@ services:
         image: bitnami/redis:7.4.2
         container_name: next-monitor-redis
         environment:
-            - REDIS_PASSWORD=${REDIS_PASSWORD}
+            - REDIS_PASSWORD=lauredis
         volumes:
             - redis_data:/bitnami/redis/data
         restart: unless-stopped
@@ -32,7 +32,7 @@ services:
         container_name: next-monitor-clickhouse
         environment:
             - CLICKHOUSE_USER=default
-            - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+            - CLICKHOUSE_PASSWORD=lauclickhouse
             - CLICKHOUSE_DATABASE=monitor
         volumes:
             - clickhouse_data:/bitnami/clickhouse
@@ -49,9 +49,9 @@ services:
         environment:
             - NODE_ENV=production
             - PORT=8001
-            - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@next-monitor-postgresql:5432/next_monitor
-            - REDIS_URL=redis://:${REDIS_PASSWORD}@next-monitor-redis:6379
-            - CLICKHOUSE_URL=http://default:${CLICKHOUSE_PASSWORD}@next-monitor-clickhouse:8123
+            - DATABASE_URL=postgresql://postgres:leslie2003@next-monitor-postgresql:5432/next_monitor
+            - REDIS_URL=redis://:lauredis@next-monitor-redis:6379
+            - CLICKHOUSE_URL=http://default:lauclickhouse@next-monitor-clickhouse:8123
         depends_on:
             - next-monitor-postgresql
             - next-monitor-redis

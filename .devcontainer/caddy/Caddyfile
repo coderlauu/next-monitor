@@ -1,4 +1,10 @@
-8.134.122.242 {
+:80 {
+    log {
+        output stderr
+        format console
+        level INFO
+    }
+
     encode gzip
 
     # API路由
