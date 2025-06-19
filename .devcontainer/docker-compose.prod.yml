@@ -43,7 +43,7 @@ services:
     # 后端服务
     next-monitor-api:
         build:
-            context: ../..
+            context: ..
             dockerfile: Dockerfile.monitor
         container_name: next-monitor-api
         environment:
@@ -62,7 +62,7 @@ services:
 
     next-monitor-dsn:
         build:
-            context: ../..
+            context: ..
             dockerfile: Dockerfile.dsn
         container_name: next-monitor-dsn
         environment:
