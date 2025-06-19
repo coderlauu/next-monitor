@@ -44,7 +44,7 @@ services:
     next-monitor-api:
         build:
             context: ..
-            dockerfile: Dockerfile.monitor
+            dockerfile: .devcontainer/Dockerfile.monitor
         container_name: next-monitor-api
         environment:
             - NODE_ENV=production
@@ -63,7 +63,7 @@ services:
     next-monitor-dsn:
         build:
             context: ..
-            dockerfile: Dockerfile.dsn
+            dockerfile: .devcontainer/Dockerfile.dsn
         container_name: next-monitor-dsn
         environment:
             - NODE_ENV=production
